@@ -1,0 +1,6 @@
+{
+  "username": "standard_user",
+  "password": "secret_sauce",
+  "products": ["Sauce Labs Backpack", "Sauce Labs Bolt T-Shirt"],
+  "customer": { "firstName": "John", "lastName": "Doe", "postalCode": "90210" }
+}
