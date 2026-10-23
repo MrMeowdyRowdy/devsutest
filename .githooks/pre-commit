@@ -1,0 +1,5 @@
+#!/bin/sh
+# Corre las pruebas antes de cada commit. Saltar con: git commit --no-verify
+echo "pre-commit: ejecutando pruebas de Cypress..."
+# VS Code define ELECTRON_RUN_AS_NODE y eso rompe Cypress
+env -u ELECTRON_RUN_AS_NODE npx cypress run --quiet

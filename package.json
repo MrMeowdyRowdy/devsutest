@@ -4,7 +4,8 @@
   "description": "Pruebas E2E (saucedemo) y API (Petstore users) con Cypress",
   "scripts": {
     "test": "cypress run",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "repository": {
     "type": "git",
