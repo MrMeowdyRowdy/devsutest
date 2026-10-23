@@ -1,0 +1,21 @@
+{
+  "name": "devsu-qa-test",
+  "version": "1.0.0",
+  "description": "Pruebas E2E (saucedemo) y API (Petstore users) con Cypress",
+  "scripts": {
+    "test": "cypress run",
+    "cy:open": "cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrMeowdyRowdy/devsutest.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrMeowdyRowdy/devsutest/issues"
+  },
+  "homepage": "https://github.com/MrMeowdyRowdy/devsutest#readme",
+  "devDependencies": {
+    "cypress": "^13.17.0"
+  }
+}
