@@ -6,6 +6,7 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
   const id = Math.floor(Math.random() * 2 ** 31);
   const username = `qa_${id}`;
   let user;
+  let changes;
 
   // El servidor publico tarda en reflejar las escrituras: reintenta el GET hasta que cumpla la condicion
   const getUserUntil = (condition, attempts = 10) =>
@@ -18,6 +19,7 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
   before(() => {
     cy.fixture('user').then(({ update, ...data }) => {
       user = { id, username, ...data };
+      changes = update;
     });
   });
 
@@ -40,6 +42,30 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+      });
+    });
+  });
+
+  it('3. Actualizar el nombre y el correo del usuario', () => {
+    const updated = { ...user, ...changes };
+    cy.request('PUT', `${api}/user/${username}`, updated).then((res) => {
+      cy.log('Entrada', JSON.stringify(updated));
+      cy.log('Salida', JSON.stringify(res.body));
+      expect(res.status).to.eq(200);
+      expect(res.body).to.deep.eq({ code: 200, type: 'unknown', message: String(id) });
+    });
+  });
+
+  it('4. Buscar el usuario actualizado', () => {
+    getUserUntil((res) => res.body.firstName === changes.firstName).then((res) => {
+      cy.log('Salida', JSON.stringify(res.body));
+      expect(res.status).to.eq(200);
+      expect(res.body).to.deep.include({
+        id,
+        username,
+        firstName: changes.firstName,
+        email: changes.email,
+        lastName: user.lastName, // lo que no se actualiza se conserva
       });
     });
   });
