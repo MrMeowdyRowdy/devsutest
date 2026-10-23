@@ -1,0 +1,12 @@
+{
+  "firstName": "Dennis",
+  "lastName": "Ocana",
+  "email": "dennis.ocana@example.com",
+  "password": "s3cret",
+  "phone": "555-0100",
+  "userStatus": 1,
+  "update": {
+    "firstName": "Dennis Steven",
+    "email": "dennis.ocana.qa@example.com"
+  }
+}
