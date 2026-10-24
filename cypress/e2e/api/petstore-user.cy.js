@@ -69,4 +69,19 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
       });
     });
   });
+
+  it('5. Eliminar el usuario', () => {
+    cy.request('DELETE', `${api}/user/${username}`).then((res) => {
+      cy.log('Salida', JSON.stringify(res.body));
+      expect(res.status).to.eq(200);
+      expect(res.body).to.deep.eq({ code: 200, type: 'unknown', message: username });
+    });
+
+    // Verificacion: el usuario ya no existe
+    getUserUntil((res) => res.status === 404).then((res) => {
+      cy.log('Salida', JSON.stringify(res.body));
+      expect(res.status).to.eq(404);
+      expect(res.body).to.deep.eq({ code: 1, type: 'error', message: 'User not found' });
+    });
+  });
 });
