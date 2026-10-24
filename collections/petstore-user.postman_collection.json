@@ -1,0 +1,273 @@
+{
+  "info": {
+    "name": "Petstore - Usuarios",
+    "description": "CRUD de usuario en https://petstore.swagger.io. Ejecutar en orden (Runner o newman).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// El servidor publico puede tardar en reflejar una escritura: espera 1 s entre llamadas",
+          "setTimeout(() => {}, 1000);"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Crear un usuario",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// id y username unicos por corrida: los datos del servidor publico son compartidos",
+              "const id = String(Math.floor(Math.random() * 2 ** 31));",
+              "pm.collectionVariables.set('userId', id);",
+              "pm.collectionVariables.set('username', 'qa_' + id);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('devuelve el id creado', () => pm.expect(pm.response.json().message).to.eql(pm.collectionVariables.get('userId')));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{userId}},\n  \"username\": \"{{username}}\",\n  \"firstName\": \"{{firstName}}\",\n  \"lastName\": \"Ocana\",\n  \"email\": \"{{email}}\",\n  \"password\": \"s3cret\",\n  \"phone\": \"555-0100\",\n  \"userStatus\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "2. Buscar el usuario creado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const u = pm.response.json();",
+              "pm.test('datos del usuario creado', () => {",
+              "  pm.expect(u.username).to.eql(pm.collectionVariables.get('username'));",
+              "  pm.expect(u.firstName).to.eql(pm.collectionVariables.get('firstName'));",
+              "  pm.expect(u.email).to.eql(pm.collectionVariables.get('email'));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/user/{{username}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "{{username}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. Actualizar nombre y correo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/user/{{username}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "{{username}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": {{userId}},\n  \"username\": \"{{username}}\",\n  \"firstName\": \"{{newFirstName}}\",\n  \"lastName\": \"Ocana\",\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"s3cret\",\n  \"phone\": \"555-0100\",\n  \"userStatus\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "4. Buscar el usuario actualizado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const u = pm.response.json();",
+              "pm.test('nombre y correo actualizados', () => {",
+              "  pm.expect(u.firstName).to.eql(pm.collectionVariables.get('newFirstName'));",
+              "  pm.expect(u.email).to.eql(pm.collectionVariables.get('newEmail'));",
+              "  pm.expect(u.lastName).to.eql('Ocana');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/user/{{username}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "{{username}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Eliminar el usuario",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "pm.test('devuelve el username', () => pm.expect(pm.response.json().message).to.eql(pm.collectionVariables.get('username')));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/user/{{username}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "{{username}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. Verificar que el usuario ya no existe",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 404', () => pm.response.to.have.status(404));",
+              "pm.test('User not found', () => pm.expect(pm.response.json().message).to.eql('User not found'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/user/{{username}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "user",
+            "{{username}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://petstore.swagger.io/v2"
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "username",
+      "value": ""
+    },
+    {
+      "key": "firstName",
+      "value": "Dennis"
+    },
+    {
+      "key": "email",
+      "value": "dennis.ocana@example.com"
+    },
+    {
+      "key": "newFirstName",
+      "value": "Dennis Steven"
+    },
+    {
+      "key": "newEmail",
+      "value": "dennis.ocana.qa@example.com"
+    }
+  ]
+}
