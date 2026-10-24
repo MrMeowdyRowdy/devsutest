@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://petstore.swagger.io/v2/user/qa_2016564119",
+    "body": null
+  },
+  "response": {
+    "status": 404,
+    "body": {
+      "code": 1,
+      "type": "error",
+      "message": "User not found"
+    }
+  }
+}

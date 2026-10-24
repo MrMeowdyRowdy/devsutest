@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "https://petstore.swagger.io/v2/user/qa_2016564119",
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "body": {
+      "id": 2016564119,
+      "username": "qa_2016564119",
+      "firstName": "Dennis",
+      "lastName": "Ocana",
+      "email": "dennis.ocana@example.com",
+      "password": "s3cret",
+      "phone": "555-0100",
+      "userStatus": 1
+    }
+  }
+}

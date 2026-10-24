@@ -16,7 +16,9 @@ jobs:
         with:
           browser: electron
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: always()
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
+          name: reports
+          path: |
+            reports
+            cypress/screenshots

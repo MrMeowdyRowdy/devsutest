@@ -16,6 +16,15 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
       return getUserUntil(condition, attempts - 1);
     });
 
+  // Guarda entrada y salida de cada llamada como evidencia en reports/api-evidence/
+  const evidence = (name, method, input, res) => {
+    cy.log(`${method} ${name}`, JSON.stringify(res.body));
+    cy.writeFile(`reports/api-evidence/${name}.json`, {
+      request: { method, url: `${api}/user/${username}`, body: input },
+      response: { status: res.status, body: res.body },
+    });
+  };
+
   before(() => {
     cy.fixture('user').then(({ update, ...data }) => {
       user = { id, username, ...data };
@@ -25,8 +34,7 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
 
   it('1. Crear un usuario', () => {
     cy.request('POST', `${api}/user`, user).then((res) => {
-      cy.log('Entrada', JSON.stringify(user));
-      cy.log('Salida', JSON.stringify(res.body));
+      evidence('1-crear-usuario', 'POST', user, res);
       expect(res.status).to.eq(200);
       expect(res.body).to.deep.eq({ code: 200, type: 'unknown', message: String(id) });
     });
@@ -34,7 +42,7 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
 
   it('2. Buscar el usuario creado', () => {
     getUserUntil((res) => res.status === 200).then((res) => {
-      cy.log('Salida', JSON.stringify(res.body));
+      evidence('2-buscar-usuario', 'GET', null, res);
       expect(res.status).to.eq(200);
       expect(res.body).to.deep.include({
         id,
@@ -49,8 +57,7 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
   it('3. Actualizar el nombre y el correo del usuario', () => {
     const updated = { ...user, ...changes };
     cy.request('PUT', `${api}/user/${username}`, updated).then((res) => {
-      cy.log('Entrada', JSON.stringify(updated));
-      cy.log('Salida', JSON.stringify(res.body));
+      evidence('3-actualizar-usuario', 'PUT', updated, res);
       expect(res.status).to.eq(200);
       expect(res.body).to.deep.eq({ code: 200, type: 'unknown', message: String(id) });
     });
@@ -58,7 +65,7 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
 
   it('4. Buscar el usuario actualizado', () => {
     getUserUntil((res) => res.body.firstName === changes.firstName).then((res) => {
-      cy.log('Salida', JSON.stringify(res.body));
+      evidence('4-buscar-usuario-actualizado', 'GET', null, res);
       expect(res.status).to.eq(200);
       expect(res.body).to.deep.include({
         id,
@@ -72,14 +79,14 @@ describe('Petstore API - ciclo de vida de un usuario', () => {
 
   it('5. Eliminar el usuario', () => {
     cy.request('DELETE', `${api}/user/${username}`).then((res) => {
-      cy.log('Salida', JSON.stringify(res.body));
+      evidence('5-eliminar-usuario', 'DELETE', null, res);
       expect(res.status).to.eq(200);
       expect(res.body).to.deep.eq({ code: 200, type: 'unknown', message: username });
     });
 
     // Verificacion: el usuario ya no existe
     getUserUntil((res) => res.status === 404).then((res) => {
-      cy.log('Salida', JSON.stringify(res.body));
+      evidence('5-verificar-eliminado', 'GET', null, res);
       expect(res.status).to.eq(404);
       expect(res.body).to.deep.eq({ code: 1, type: 'error', message: 'User not found' });
     });

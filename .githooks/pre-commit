@@ -3,3 +3,7 @@
 echo "pre-commit: ejecutando pruebas de Cypress..."
 # VS Code define ELECTRON_RUN_AS_NODE y eso rompe Cypress
 env -u ELECTRON_RUN_AS_NODE npx cypress run --quiet
+status=$?
+# La corrida regenera reports/: se deja como esta en el staging para no ensuciar el arbol
+git checkout -- reports 2>/dev/null
+exit $status
