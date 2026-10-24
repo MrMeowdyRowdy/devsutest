@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "DELETE",
-    "url": "https://petstore.swagger.io/v2/user/qa_2016564119",
+    "url": "https://petstore.swagger.io/v2/user/qa_1800732530",
     "body": null
   },
   "response": {
@@ -9,7 +9,7 @@
     "body": {
       "code": 200,
       "type": "unknown",
-      "message": "qa_2016564119"
+      "message": "qa_1800732530"
     }
   }
 }

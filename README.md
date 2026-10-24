@@ -32,6 +32,7 @@ npm test            # todas las pruebas, modo consola
 npm run test:e2e    # solo E2E (saucedemo)
 npm run test:api    # solo API (Petstore usuarios)
 npm run cy:open     # interfaz de Cypress: E2E Testing -> navegador -> spec
+npm run zip         # empaqueta el entregable en devsutest.zip (requiere zip: Linux, macOS o WSL)
 ```
 
 > **Terminal de VS Code en Linux/WSL:** VS Code define `ELECTRON_RUN_AS_NODE` y Cypress falla con `bad option: --no-sandbox`. Ejecutar con `env -u ELECTRON_RUN_AS_NODE npm test`.
@@ -92,5 +93,6 @@ cypress/fixtures/              datos de prueba
 cypress/support/commands.js    comando cy.login
 collections/                   colección Postman
 reports/                       reportes y evidencias generados
+readme.txt                     estas instrucciones en texto plano
 conclusiones.txt               hallazgos y conclusiones
 ```
