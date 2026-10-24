@@ -1,0 +1,75 @@
+CONCLUSIONES Y HALLAZGOS
+========================
+
+Resultado: todas las pruebas pasan.
+  - E2E saucedemo: 1 flujo completo de compra (5 pasos validados).
+  - API Petstore:  5 casos del ciclo de vida del usuario.
+  - Coleccion Postman: 6 requests, 11 assertions, todas en verde.
+
+
+1. E2E - SAUCEDEMO
+------------------
+  H1. El sitio expone atributos data-test en todos los elementos usados en el
+      flujo (login, productos, carrito, checkout). Se usaron como selectores
+      porque no dependen de estilos ni de textos, lo que hace la prueba estable.
+
+  H2. Al hacer click en "Add to cart" el sitio reemplaza el boton por uno nuevo
+      ("Remove"). Encadenar una validacion sobre el boton original falla con
+      "element is detached from the DOM". Solucion: volver a buscar el boton
+      despues del click.
+
+  H3. El enunciado pide la confirmacion "THANK YOU FOR YOUR ORDER", pero el
+      sitio muestra "Thank you for your order!". La validacion se hizo sin
+      distinguir mayusculas para cubrir el requisito sin depender del formato.
+
+  H4. Ademas del mensaje final se valida la consistencia del resumen de compra:
+      el total mostrado es igual a subtotal + impuesto.
+
+  H5. El flujo completo tarda unos 3 segundos en modo consola.
+
+
+2. API - PETSTORE (USUARIOS)
+----------------------------
+  H6. Los datos del servidor publico son compartidos con cualquier usuario de
+      internet y el cliente elige el id y el username. Para evitar choques, cada
+      corrida genera un id aleatorio y username = qa_<id>.
+
+  H7. El servidor publico puede tardar en reflejar una escritura: un GET justo
+      despues de un POST o PUT puede devolver 404 o datos anteriores. Las
+      busquedas reintentan hasta 10 veces (1 s entre intentos) antes de
+      validar. En la coleccion Postman se espera 1 s antes de cada request.
+
+  H8. La API devuelve la contrasena del usuario en texto plano en
+      GET /user/{username} (campo "password"). En una API real seria un
+      problema de seguridad.
+
+  H9. La API casi no valida las entradas:
+      - POST /user con body vacio {} responde 200 (message "0").
+      - PUT /user/{username} sobre un usuario que no existe responde 200.
+      Por eso un status 200 no prueba que la operacion tuvo efecto: las pruebas
+      validan tambien el body de la respuesta y leen el usuario despues de cada
+      escritura.
+
+  H10. Las respuestas de escritura no devuelven el recurso, solo un mensaje:
+      POST y PUT -> {code: 200, type: "unknown", message: "<id>"}
+      DELETE     -> {code: 200, type: "unknown", message: "<username>"}
+      Despues de eliminar, GET responde 404 {code: 1, type: "error",
+      message: "User not found"}.
+
+  H11. El campo "type": "unknown" en respuestas exitosas no aporta informacion
+      y no coincide con la documentacion de Swagger.
+
+
+3. CONCLUSIONES
+---------------
+  - Cypress permite cubrir E2E y API en un solo proyecto, con un solo
+    comando de ejecucion y un solo reporte.
+  - Las pruebas contra servicios publicos compartidos necesitan datos unicos
+    por corrida y reintentos en las lecturas; sin eso fallan de forma
+    intermitente sin que exista un error real.
+  - En APIs permisivas como Petstore, validar solo el status code no es
+    suficiente: hay que validar el body y confirmar cada cambio con una
+    lectura posterior.
+  - El hook de pre-commit y GitHub Actions ejecutan las pruebas antes de
+    integrar cambios a main, y los reportes quedan como evidencia de cada
+    ejecucion.
